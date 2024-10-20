@@ -7,10 +7,12 @@ namespace Expense_App.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly ExpensesDbContext _context;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, ExpensesDbContext context)
         {
             _logger = logger;
+            _context = context;
         }
 
         public IActionResult Index()
@@ -18,21 +20,47 @@ namespace Expense_App.Controllers
             return View();
         }
 
-        public IActionResult CreateEditExpense()
+        public IActionResult CreateEditExpense(int? id)
         {
+            if (id != null)
+            {
+                var expenseInDb = _context.Expenses.SingleOrDefault(expense => expense.Id == id);
+                return View(expenseInDb);
+            }
+
+
             return View();
         }
 
-        public IActionResult CreateEditExpenseForm()
+        public IActionResult DeleteExpense(int id)
         {
-            return RedirectToAction("Index");
+            var expenseInDb = _context.Expenses.SingleOrDefault(expense => expense.Id == id);
+            _context.Expenses.Remove(expenseInDb);
+            _context.SaveChanges();
+            return RedirectToAction("Expenses");
+        }
+
+        public IActionResult CreateEditExpenseForm(Expense model)
+        {
+            if (model.Id ==0)
+            {
+                _context.Expenses.Add(model);
+            }
+            else
+            {
+                _context.Expenses.Update(model);
+            }
+            _context.SaveChanges(); //is a must
+
+            return RedirectToAction("Expenses");
         }
             
 
         //Controller za otvaranje Stranice
         public IActionResult Expenses()
         {
-            return View(); //Return View() znaci da ce otvoriti view sa istim imenom kao metoda
+            var allExpenses = _context.Expenses.ToList();
+            return View(allExpenses); //Return View() znaci da ce otvoriti view sa istim imenom kao metoda
         }
 
         public IActionResult Privacy()
