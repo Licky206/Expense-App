@@ -18,6 +18,23 @@ namespace Expense_App.Controllers
             return View();
         }
 
+        public IActionResult CreateEditExpense()
+        {
+            return View();
+        }
+
+        public IActionResult CreateEditExpenseForm()
+        {
+            return RedirectToAction("Index");
+        }
+            
+
+        //Controller za otvaranje Stranice
+        public IActionResult Expenses()
+        {
+            return View(); //Return View() znaci da ce otvoriti view sa istim imenom kao metoda
+        }
+
         public IActionResult Privacy()
         {
             return View();
